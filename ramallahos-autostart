@@ -1,0 +1,64 @@
+#!/bin/env bash
+killall -9 albert blueberry-tray caffeine-ng-git dunst emacs fctix feh flameshot gammy kmix lxsession mpDris2 mpd nm-applet obs parcellite picom polybar sxhkd udiskie ufw variety xbanish xfce4-power-manager || true
+
+/usr/bin/emacs --daemon & || true
+albert & || true
+blueberry-tray & || true
+caffeine-ng-git & || true
+dex $HOME/.config/autostart/arcolinux-welcome-app.desktop & || true
+dunst -config $HOME/.config/dunst/dunstrc & || true
+edges & || true
+fcitx -d & || true
+feh --bg-fill /usr/share/backgrounds/arcolinux/arco-wallpaper.jpg & || true
+flameshot & || true
+gammy & || true
+ufw & || true
+kmix & || true
+ksuperkey -e 'Super_L=Alt_L|F1' & || true
+ksuperkey -e 'Super_R=Alt_L|F1' & || true
+lxsession & || true
+mpDris2 & || true
+mpd & || true
+nm-applet & || true
+obs --minimize-to-tray & || true
+parcellite & || true
+pgrep -x sxhkd > /dev/null || sxhkd & || true
+polybar -q main -c ~/.config/polybar/grayblocks.ini & || true
+udiskie & || true
+variety & || true
+picom --config $HOME/.xmonad/picom.conf & || true
+xbanish & || true
+xfce4-power-manager & || true
+xmodmap ~/.config/X11/xmodmap & || true
+xrdb ~/.Xresources & || true
+xsetroot -cursor_name left_ptr & || true
+
+session=$DESKTOP_SESSION
+case $session in
+    bspwm)  echo -ne "
+swipe_threshold 0
+gesture swipe left  4   spectacle -r -n # capture selected region
+gesture swipe right 4   bash $HOME/.config/.scripts/nightmode.sh
+gesture swipe up    3   xdotool key alt+space  #launch albert
+gesture swipe down  3   tdrop -am -w 60% -h 50% -y 25% -x 20% kitty # show terminal scratchpaD
+gesture swipe down  4   bash $HOME/.config/.scripts/powermenu/powermenu.sh #powermenu
+gesture swipe up    4   emacsclient -c -a 'emacs' # launch emacsclient
+gesture swipe left  3   bspc desktop -f next.local #next desktop
+gesture swipe right 3   bspc desktop -f prev.local #previous desktop
+gesture pinch in    3   bspc node -c # close focused window
+gesture pinch out   3   bspc node focused -g hidden=on # HIDE FOCUSED" > $HOME/.config/libinput-gestures.conf ;;
+    plasma) echo -ne "
+swipe_threshold 0
+gesture swipe left 4 xdotool key alt+Right
+gesture swipe right 4 xdotool key alt+Left
+gesture swipe up 3 qdbus org.kde.kglobalaccel /component/kwin invokeShortcut 'Expose'
+gesture swipe down 3 qdbus org.kde.kglobalaccel /component/kwin invokeShortcut 'ShowDesktopGrid'
+gesture swipe down 4 qdbus org.kde.kglobalaccel /component/kwin invokeShortcut 'Window Minimize'
+gesture swipe up 4 qdbus org.kde.kglobalaccel /component/kwin invokeShortcut 'Window Maximize'
+gesture swipe left 3 qdbus org.kde.kglobalaccel /component/kwin invokeShortcut 'Switch to Next Desktop'
+gesture swipe right 3 qdbus org.kde.kglobalaccel /component/kwin invokeShortcut 'Switch to Previous Desktop'
+gesture pinch in 3 xkill
+gesture pinch out 3 xdotool key alt+0xffbe" > $HOME/.config/libinput-gestures.conf ;;
+    *)   ;;
+esac
+
